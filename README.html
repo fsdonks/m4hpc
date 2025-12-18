@@ -1,0 +1,1074 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2026-01-21 Wed 10:16 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>M4HPC</title>
+<meta name="author" content="M4 Dev" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+<style> pre.src { background-color: #292e34; color: white; }</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">M4HPC</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org2117566">1. High Performance Computing APIs for M4</a></li>
+<li><a href="#org5996c03">2. Current Release</a></li>
+<li><a href="#org826a793">3. M4 Entry Points</a>
+<ul>
+<li><a href="#org5482480">3.1. GUI</a></li>
+<li><a href="#orgc18b89d">3.2. CLI</a></li>
+<li><a href="#org4171c4e">3.3. Predefined CLI Args</a>
+<ul>
+<li><a href="#org03bc0f8">3.3.1. &lt;none&gt;</a></li>
+<li><a href="#org6c28986">3.3.2. peer</a></li>
+<li><a href="#orgce575ad">3.3.3. repl</a></li>
+<li><a href="#org989f312">3.3.4. main</a></li>
+<li><a href="#orgd8171e1">3.3.5. clojure.main (bypass the launcher)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org8a7cd1d">4. Distributed Clojure REPL Using Hazelcast</a>
+<ul>
+<li><a href="#org7025216">4.1. Assumptions</a></li>
+<li><a href="#org618fd9b">4.2. Workflow</a></li>
+<li><a href="#org7c3fb74">4.3. hazelcast.edn</a></li>
+<li><a href="#org7267bf1">4.4. peers.pbs</a>
+<ul>
+<li><a href="#org084b08d">4.4.1. Alternative PBS Method (Pending)</a></li>
+</ul>
+</li>
+<li><a href="#org6b6acfc">4.5. Helper Scripts for peers and master</a></li>
+<li><a href="#org4468514">4.6. Demo</a></li>
+</ul>
+</li>
+<li><a href="#org44a06e6">5. Distributed M4 Runs Using Run Plans and PBS JobArrays</a>
+<ul>
+<li><a href="#orgb60d3d2">5.1. Creating Run Plans</a></li>
+<li><a href="#orga74d54e">5.2. Emitting Run Plans</a>
+<ul>
+<li><a href="#org9480e68">5.2.1. workbook</a></li>
+<li><a href="#org8d046e9">5.2.2. input-map</a></li>
+<li><a href="#org56be10c">5.2.3. node-count</a></li>
+</ul>
+</li>
+<li><a href="#org73003df">5.3. Planning vs. Execution</a>
+<ul>
+<li><a href="#orgf3d6b8b">5.3.1. Setup</a></li>
+</ul>
+</li>
+<li><a href="#orga2a1d97">5.4. Per-Node Execution</a></li>
+<li><a href="#org8731e88">5.5. Job Submission</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org2117566" class="outline-2">
+<h2 id="org2117566"><span class="section-number-2">1.</span> High Performance Computing APIs for M4</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This is a working implementation of running M4 on 'nix systems with the Portable
+Batch System installed.
+</p>
+</div>
+</div>
+<div id="outline-container-org5996c03" class="outline-2">
+<h2 id="org5996c03"><span class="section-number-2">2.</span> Current Release</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+<a href="http://marathon-site.s3-website-us-gov-west-1.amazonaws.com/releases/m4-2.25.jar">
+m4-2.25.jar</a>
+</p>
+</div>
+</div>
+<div id="outline-container-org826a793" class="outline-2">
+<h2 id="org826a793"><span class="section-number-2">3.</span> M4 Entry Points</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org5482480" class="outline-3">
+<h3 id="org5482480"><span class="section-number-3">3.1.</span> GUI</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+For the M4 uberjar, the main entrypoint actually delegates to a
+lightweight launcher to simplify the end-user experience, and act more like an
+"app" they can just 2x click to use in a typical environmet (e.g., Windows or XWindows).
+</p>
+
+<p>
+To this end, we typically want to leverage (for commodity hardware) 2-4gb of
+heap, and we want to ensure we're using the parallel GC instead of the later
+(Java 9+) default G1GC due to measured throughput benefits.
+</p>
+
+<p>
+So one way to get a running instance in a Windows or XWindows environment is to just
+2x click the jar file.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc18b89d" class="outline-3">
+<h3 id="orgc18b89d"><span class="section-number-3">3.2.</span> CLI</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+If invoked via a java command from the CLI, the entry point will scrape any CLI-supplied JVM args and apply
+them to the subprocess (with some logging to indicate what actually launched).
+This allows callers to supply custom configuration for the production jvm process.
+</p>
+
+<p>
+If no args are supplied (e.g., akin to a user just 2x clicks the jar file), then we
+default to -Xmx4g -XX:+UseParallelGC for the heap and GC args respectively.
+</p>
+</div>
+</div>
+<div id="outline-container-org4171c4e" class="outline-3">
+<h3 id="org4171c4e"><span class="section-number-3">3.3.</span> Predefined CLI Args</h3>
+<div class="outline-text-3" id="text-3-3">
+</div>
+<div id="outline-container-org03bc0f8" class="outline-4">
+<h4 id="org03bc0f8"><span class="section-number-4">3.3.1.</span> &lt;none&gt;</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<p>
+A 0-arg invocation ala
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar
+</pre>
+</div>
+
+<p>
+Will launch the marathon.main/-main entrypoint, and ultimately try to intialize
+the GUI environment. This is more of the "app" mode intended for interactive use
+and analysis, and is undesirable for headless work.
+</p>
+</div>
+</div>
+<div id="outline-container-org6c28986" class="outline-4">
+<h4 id="org6c28986"><span class="section-number-4">3.3.2.</span> peer</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar peer
+</pre>
+</div>
+
+<p>
+Will initialize an M4 peer instance that will connect to other peers using the Hazelcast
+<a href="https://hazelcast.com/">https://hazelcast.com/</a> distributed computing framework.  This particular use-case
+is discussed in depth under <a href="#org8a7cd1d">Distributed Clojure REPL Using Hazelcast</a> .
+</p>
+
+<p>
+The peer will look for hazelcast configurations (specified currently as clojure .edn
+data structure files) in order of precedence:
+</p>
+
+<ul class="org-ul">
+<li>./hazelcast.edn</li>
+<li>~/.hazelcast/hazelcast.edn</li>
+<li>HAZELCAST environment var (limited to specific AWS EC2 use cases).</li>
+</ul>
+
+<p>
+After initial configuration, the process will dump into a clojure repl in
+the m4peer.core namespace with marathon-related infrastucture preloaded and
+available for use in distributed workflows (both pre-built and emergent/user-defined
+on the distributed REPL).
+</p>
+
+<p>
+This enables common workloads (like firing up multiple headless peers over SSH)
+with preconfigured distributed mapping of workloads, distributed evaluation of clojure
+expressions from the REPL, distributed compilation/recompilation, etc.
+</p>
+
+<p>
+For more information on the Clojure wrapper used and the simplified hazelcast.edn
+setup, see <a href="https://github.com/joinr/hazeldemo">https://github.com/joinr/hazeldemo</a>.
+</p>
+
+<p>
+The utility of running peers in this prescribed way is that "normal" users performing TAA analyses don't
+have to know about the peers.  To them, all invocations look the same (even the cluster discovery process
+and work distribution is transparent).  They only have to opt-in to executing on a cluster by modifying
+the basic TAA input map to include the specific key:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #4f97d7;">{</span>... elided
+ <span style="color: #a45bad;">:run-site</span> <span style="color: #a45bad;">:cluster</span><span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+
+<p>
+The TAA pipeline will pick up on this key and (if necessary) establish a local
+peer on the user's machine, connect to the extant cluster using whatever the
+hazelcast configuration defines, and then farm out runs from the pipeline using
+a work stealing queue with peers picking up the load and Hazelcast handling load
+balancing.
+</p>
+
+<p>
+Callers can also leverage arbitrary distributed computation in their scripts,
+e.g. to supplement analyses or define emergent workflows that go beyond the
+extant TAA pipeline. Peers are still useful here, since they will be listening
+for work/messages with the same dependencies the user has, thus enabling general
+purpose distributed computing from the REPL.
+</p>
+</div>
+</div>
+<div id="outline-container-orgce575ad" class="outline-4">
+<h4 id="orgce575ad"><span class="section-number-4">3.3.3.</span> repl</h4>
+<div class="outline-text-4" id="text-3-3-3">
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar repl
+</pre>
+</div>
+
+<p>
+is equivalent to:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar clojure.main/repl
+</pre>
+</div>
+
+<p>
+It serves as a means to establish a vanilla clojure REPL with the M4 jar file (and all associated
+libraries) on the classpath, but without anything loaded.  This can be used as an arbitrary
+scripting environment with faster load times than pulling in all the M4 infrastructure.  On austere
+air-gapped systems, we get a clojure development/scripting environment with many useful libraries
+pre-packaged.
+</p>
+
+<p>
+See <a href="https://clojure.org/reference/repl_and_main">https://clojure.org/reference/repl_and_main</a> for relevant optional arguments.
+</p>
+</div>
+</div>
+<div id="outline-container-org989f312" class="outline-4">
+<h4 id="org989f312"><span class="section-number-4">3.3.4.</span> main</h4>
+<div class="outline-text-4" id="text-3-3-4">
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar main
+</pre>
+</div>
+<p>
+is equivalent to:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar clojure.main
+</pre>
+</div>
+
+<p>
+with the exception that the launcher will inject default args on the caller's
+behalf.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar  main -e <span style="color: #2d9574;">"(println \"hello world\")"</span>
+<span style="color: #4f97d7;">{</span>:launching-subprocess <span style="color: #2d9574;">"java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"-e\" \"(println \\\"hello world\\\")\""</span>, :jvm-args <span style="color: #bc6ec5;">[</span><span style="color: #2d9574;">"-XX:+UseParallelGC"</span><span style="color: #bc6ec5;">]</span>, :user-args <span style="color: #bc6ec5;">[</span><span style="color: #2d9574;">"main"</span> <span style="color: #2d9574;">"-e"</span> <span style="color: #2d9574;">"(println \"hello world\")"</span><span style="color: #bc6ec5;">]</span>, :args <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"main"</span> <span style="color: #2d9574;">"-e"</span> <span style="color: #2d9574;">"(println \"hello world\")"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">}</span>
+hello world
+</pre>
+</div>
+
+<p>
+Given a simple Clojure script, blah.clj:
+</p>
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #4f97d7;">(</span>println <span style="color: #2d9574;">"Hello world!"</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<p>
+We can simply load it through main:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar  main blah.clj
+<span style="color: #4f97d7;">{</span>:launching-subprocess <span style="color: #2d9574;">"java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"blah.clj\""</span>, :jvm-args <span style="color: #bc6ec5;">[</span><span style="color: #2d9574;">"-XX:+UseParallelGC"</span><span style="color: #bc6ec5;">]</span>, :user-args <span style="color: #bc6ec5;">[</span><span style="color: #2d9574;">"main"</span> <span style="color: #2d9574;">"blah.clj"</span><span style="color: #bc6ec5;">]</span>, :args <span style="color: #bc6ec5;">(</span><span style="color: #2d9574;">"main"</span> <span style="color: #2d9574;">"blah.clj"</span><span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">}</span>
+Hello world!
+</pre>
+</div>
+
+<p>
+Through this we have a general means for invoking arbitrary clojure programs:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar main domanyruns.clj
+</pre>
+</div>
+
+<p>
+See <a href="https://clojure.org/reference/repl_and_main">https://clojure.org/reference/repl_and_main</a> for relevant optional arguments.
+</p>
+</div>
+</div>
+<div id="outline-container-orgd8171e1" class="outline-4">
+<h4 id="orgd8171e1"><span class="section-number-4">3.3.5.</span> clojure.main (bypass the launcher)</h4>
+<div class="outline-text-4" id="text-3-3-5">
+<p>
+We can have direct control over a single jvm process if we launch with
+clojure.main.  This bypasses the lancher entirely and possibly saves some time/resources.
+Since we're bypassing the launcher, all jvm settings are default (e.g. Xmx and GC settings),
+which puts the burden on the caller to configure their invocation correctly.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-4.2.24.jar  clojure.main -e <span style="color: #2d9574;">"(println \"hello world\")"</span>
+&lt;caller specified clojure.main from cli, bypassing launcher&gt;
+hello world
+</pre>
+</div>
+
+<p>
+Similarly, we can load clojure programs as with main:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">java -jar m4-2.23.jar  clojure.main blah.clj
+&lt;caller specified clojure.main from cli, bypassing launcher&gt;
+Hello world!
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org8a7cd1d" class="outline-2">
+<h2 id="org8a7cd1d"><span class="section-number-2">4.</span> Distributed Clojure REPL Using Hazelcast</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Scripts referenced below may be found in the /peer folder, and input data
+(primarily a MARATHON worbook) in the /data folder.
+</p>
+</div>
+<div id="outline-container-org7025216" class="outline-3">
+<h3 id="org7025216"><span class="section-number-3">4.1.</span> Assumptions</h3>
+<div class="outline-text-3" id="text-4-1">
+<ul class="org-ul">
+<li>The sole system dependency is a JVM &gt;= 1.8</li>
+
+<li>The working directory is readable/writeable from the compute nodes in a
+particular job (or we can target such a shared location)</li>
+
+<li>The session in this script is meant to be launched as an interactive job via
+SSH, where we (the user) attach so an arbitrary compute node (dubbed the
+master node), and we initiate ad-hoc clustering with a supplemental script
+(launch-it) to get an interactive clojure REPL with distributed compute
+capability amongst all the peers.</li>
+
+<li>We have configured inputs for study analysis (e.g., a TAA useage.clj file that
+references input data on the shared file system)</li>
+
+<li>We have write access to desired output directories as necessary (e.g., paths
+specified in the TAA usage script).</li>
+
+<li>We have a ~/hazelcast.edn file that all peers can read to share a common
+hazelcast configuration and discovery strategy.</li>
+
+<li>All the peers have write acess to the path indicated in the ~/hazelcast.edn
+file so that they can register themselves for auto-discovery and cluster
+joining.</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org618fd9b" class="outline-3">
+<h3 id="org618fd9b"><span class="section-number-3">4.2.</span> Workflow</h3>
+<div class="outline-text-3" id="text-4-2">
+<ul class="org-ul">
+<li>User connects to an HPC system with the above setup.
+<ul class="org-ul">
+<li>hazelcast.edn</li>
+<li>peers.pbs</li>
+<li>master.sh</li>
+<li>peer.sh</li>
+<li>launchit.sh</li>
+<li>(optional) runit.sh</li>
+</ul></li>
+
+<li><p>
+User invokes this PBS script (or a modified version) to
+get an interactive session, either from the CLI or
+from an optional script like runit.sh:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">qsub -i peers.pbs
+</pre>
+</div></li>
+
+<li>The job is queued and the user is left with an ssh connection
+to what we deem "the master node".</li>
+<li><p>
+User then invokes a supplemental script to initiate
+the peers.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">./sh launchit.sh
+</pre>
+</div>
+<ul class="org-ul">
+<li>Note: this differs a bit when compared to the PET guidance
+where everything is coordinated from the PBS file over ssh.
+We will revisit that since it's a mildly cleaner design, if
+it can be made to work (definitely user error at this point).</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org7c3fb74" class="outline-3">
+<h3 id="org7c3fb74"><span class="section-number-3">4.3.</span> hazelcast.edn</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+We use the default companion ~/hazelcast.edn which will provide the default
+connection configuration for any peers launching from this filesystem. Since
+the filesystem gets mounted to each peer during job submission time (they all
+have the user's home directory mapped, at least on Betty), they will all pick
+up ~/hazelcast.edn which tells them to use tcp/ip discovery and register their
+IP's in ~/registry for the ad-hoc cluster and message services.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #4f97d7;">{</span><span style="color: #a45bad;">:id</span> <span style="color: #2d9574;">"dev"</span>
+ <span style="color: #a45bad;">:join</span> <span style="color: #a45bad;">:tcp</span>
+ <span style="color: #a45bad;">:members</span> <span style="color: #bc6ec5;">{</span><span style="color: #a45bad;">:</span><span style="color: #ce537a; font-weight: bold;">file</span><span style="color: #b2b2b2; background-color: #292b2e;">/</span><span style="color: #a45bad;">path</span> <span style="color: #2d9574;">"./registry"</span><span style="color: #bc6ec5;">}</span>
+ <span style="color: #a45bad;">:register-on-join</span> <span style="color: #a45bad;">true</span><span style="color: #4f97d7;">}</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org7267bf1" class="outline-3">
+<h3 id="org7267bf1"><span class="section-number-3">4.4.</span> peers.pbs</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+The included sample allocates 5 nodes (we can change this with CLI args, or just
+modify the select PBS arg for select).
+</p>
+
+<p>
+We'll leverage the example from PET guides to build a node<sub>list</sub> that our head
+node can use to launch peers. node<sub>list.txt</sub> will be populated with the
+resolvable names of each node in our PBS job (e.g., for a select=5 job, we
+expect to see a text file with the names of 5 nodes, one per line).
+</p>
+
+<p>
+Then we'll qsub will interactively ssh us into the master node so we can
+go work.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">!/bin/</span><span style="color: #4f97d7; font-weight: bold;">bash</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -A OARMY5244AH96</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -q standard</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l select=5</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l walltime=1:00:00</span>
+
+cat $<span style="color: #7590db;">PBS_NODEFILE</span> | sort -u &gt; node_list.txt
+<span style="color: #7590db;">NNODES</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">cat node_list.txt | wc -l</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #7590db;">ridx</span>=<span style="color: #a45bad;">1</span>
+<span style="color: #7590db;">ROOTNODE</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">sed "${ridx}q;d" node_list.txt</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"ssh into master node, use launchit.sh to connect to cluster"</span>
+ssh $<span style="color: #7590db;">ROOTNODE</span>
+</pre>
+</div>
+</div>
+<div id="outline-container-org084b08d" class="outline-4">
+<h4 id="org084b08d"><span class="section-number-4">4.4.1.</span> Alternative PBS Method (Pending)</h4>
+<div class="outline-text-4" id="text-4-4-1">
+<p>
+Alternately (ideally) this would do the same thing with no manual
+intervention, but I lack the skills to get it working at the moment.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">!/bin/</span><span style="color: #4f97d7; font-weight: bold;">bash</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -A OARMY5244AH96</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -q standard</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l select=5</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l walltime=1:00:00</span>
+
+cat $<span style="color: #7590db;">PBS_NODEFILE</span> | sort -u &gt; node_list.txt
+<span style="color: #7590db;">NNODES</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">cat node_list.txt | wc -l</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #7590db;">ridx</span>=<span style="color: #a45bad;">1</span>
+<span style="color: #7590db;">ROOTNODE</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">sed "${ridx}q;d" node_list.txt</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7;">echo</span> <span style="color: #2d9574;">"ssh into master node, use launchit.sh to connect to cluster"</span>
+ssh $<span style="color: #7590db;">ROOTNODE</span> <span style="color: #2d9574;">"sh launchit.sh"</span>
+</pre>
+</div>
+
+<p>
+Or we do all the work that launchit.sh does (spawning peers) from the PBS file.
+</p>
+
+<p>
+This is what PET suggested, but I couldn't get it to work on my end. Instead, we
+just ssh into a node and kick off the process manually.
+</p>
+
+<p>
+We should be able to do this though, I just ran out of time getting it to work.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell"><span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">!/bin/</span><span style="color: #4f97d7; font-weight: bold;">bash</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -A OARMY5244AH96</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -q standard</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l select=5</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l walltime=1:00:00</span>
+
+cat $<span style="color: #7590db;">PBS_NODEFILE</span> | sort -u &gt; node_list.txt
+<span style="color: #7590db;">NNODES</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">cat node_list.txt | wc -l</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #7590db;">ridx</span>=<span style="color: #a45bad;">1</span>
+<span style="color: #7590db;">ROOTNODE</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">sed "${ridx}q;d" node_list.txt</span><span style="color: #4f97d7;">)</span>
+
+<span style="color: #4f97d7; font-weight: bold;">for</span> <span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">(</span>i = <span style="color: #a45bad;">2</span>; i&lt;=$<span style="color: #7590db;">NNODES</span>;i++<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+  <span style="color: #4f97d7; font-weight: bold;">do</span>
+    <span style="color: #7590db;">MYNODE</span>=$<span style="color: #4f97d7;">(</span><span style="color: #bc6ec5;">sed "${i}q;d" node_list.txt</span><span style="color: #4f97d7;">)</span>
+    ssh $<span style="color: #7590db;">MYNODE</span> ./runpeer.sh &amp;
+ssh $<span style="color: #7590db;">ROOTNODE</span> ./runmaster.sh
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org6b6acfc" class="outline-3">
+<h3 id="org6b6acfc"><span class="section-number-3">4.5.</span> Helper Scripts for peers and master</h3>
+<div class="outline-text-3" id="text-4-5">
+<p>
+We provide a couple of companion scripts that serve as hook sites for
+configuring peers and the master node.
+</p>
+
+<p>
+For now, they are identical, but we expect the scripts ~/runpeer.sh and
+~/runmaster.sh to be present.
+</p>
+
+<p>
+They contain our java CLI invocations for setting up the JVM with the
+appropriate args (typically -Xmx###g) depending on the compute node's
+capabilities. E.g., if we know our nodes can accomodate a 250gb heap, then we
+can have -Xmx250g or any other JVM args.
+</p>
+
+<p>
+If we want to handle the master node we're interacting from differently, then
+this is where we can hook in later. Also adapted from PET guide.
+</p>
+</div>
+</div>
+<div id="outline-container-org4468514" class="outline-3">
+<h3 id="org4468514"><span class="section-number-3">4.6.</span> Demo</h3>
+<div class="outline-text-3" id="text-4-6">
+<p>
+The folder /peer/usagedemo contains the sole input and script
+necessary for doing distributed runs using the generic peer
+infrastructure from above.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org44a06e6" class="outline-2">
+<h2 id="org44a06e6"><span class="section-number-2">5.</span> Distributed M4 Runs Using Run Plans and PBS JobArrays</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+While the interactive mode is extremely flexible and useful for runs of
+limited scope, if we need to truly scale out, and the workload might
+persist for days or weeks, then we have to explore offline methods
+of job submission.
+</p>
+
+<p>
+The PBS system provides a simple extension for bulk workloads that
+can be expressed via a simple incrementing index that maps to the work.
+If we can express our experimental design as a deterministic run plan,
+and we have a means of loading pieces of work based on an integer index,
+then we can leverage the job array system to submit scalable workloads
+for non-interactive work.
+</p>
+
+<p>
+Any scripts referenced below will be located in the /jobarray folder,
+with input data in the /data folder.
+</p>
+
+<p>
+A current MARATHON jar (as linked at the top of this file) must also
+be available to every potential node.
+</p>
+</div>
+<div id="outline-container-orgb60d3d2" class="outline-3">
+<h3 id="orgb60d3d2"><span class="section-number-3">5.1.</span> Creating Run Plans</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+The normal mechanism for our bulk (e.g., TAA) processing follows
+on online, streaming model where we have a work queue with distributed
+workers.  In this scheme, we don't really care about the total extent
+of the work - we just keep pushing work onto the queue until we're done,
+while workers take work and submit results.  In this paradigm, we
+don't intend to follow an optimal (globally or locally) distribution
+of work amongst peers; instead we let the system load balance using
+hueristics and work stealing.  As such, the actual scheduling of work
+to nodes is intentionally abstracted.  To have a determinstic mapping of
+work-items to nodes, we need to change this and develop a plan for how
+our runs are scheduled.
+</p>
+</div>
+</div>
+<div id="outline-container-orga74d54e" class="outline-3">
+<h3 id="orga74d54e"><span class="section-number-3">5.2.</span> Emitting Run Plans</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+We can leverage much of the existing TAA pipeline to generate a
+persistent plan.  From there, we can try to optimize our plan such
+that the total makespan of the work is minimized, which naturally leads
+to an even distribution of work across a set of nodes.
+</p>
+
+<p>
+The inputs we care about are:
+</p>
+<ul class="org-ul">
+<li>a pre-supplied MARATHON workbook to provide a project we can manage in memory</li>
+<li>a companion TAA input-map that supplies transforms and other parameters that
+inform how a project is decomposed into design points and replications to
+ultimately constitute a batch of work (or simulation runs)</li>
+<li>how many nodes we expect to distribute the runs over</li>
+<li>a hueristic that helps us estimate the amount of effort or cost
+required for a particular design point.
+<ul class="org-ul">
+<li>We will use a simple estimate of the total supply of entities,
+since that strongly correlates with events in the simulation.</li>
+</ul></li>
+</ul>
+</div>
+<div id="outline-container-org9480e68" class="outline-4">
+<h4 id="org9480e68"><span class="section-number-4">5.2.1.</span> workbook</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+This is assumed to be pre-supplied to any nodes that need to get at it.
+Specifically, we assume it is available relative to some known path.
+</p>
+
+<p>
+We have 2 sample workbooks in /data
+</p>
+<ul class="org-ul">
+<li><code>m4_book_AP.xlsx</code></li>
+<li><code>m4_book_BP.xlsx</code></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org8d046e9" class="outline-4">
+<h4 id="org8d046e9"><span class="section-number-4">5.2.2.</span> input-map</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+This is a clojure map either serialized in .edn format (e.g.
+a readable clojure data structure that can be deserialized by
+the clojure reader natively), or defined and used in-memory
+within a clojure script.  Our examples will follow the in-memory
+model, and we will have input maps for each workbook.
+</p>
+</div>
+</div>
+<div id="outline-container-org56be10c" class="outline-4">
+<h4 id="org56be10c"><span class="section-number-4">5.2.3.</span> node-count</h4>
+<div class="outline-text-4" id="text-5-2-3">
+<p>
+We intentionally keep this variable to allow our plan to
+adapt to resourcing.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org73003df" class="outline-3">
+<h3 id="org73003df"><span class="section-number-3">5.3.</span> Planning vs. Execution</h3>
+<div class="outline-text-3" id="text-5-3">
+<p>
+The preferred approach is to have a reusable script that
+can be used to both setup / emit a persistent run-plan,
+in addition to performing incremental runs relative to
+a job array index.
+</p>
+
+<p>
+The <code>batch_test.clj</code> script provides an example and a minimal
+API to build our PBS job on.  It supplies the relevant input
+maps and workbook paths, as well as a function to emit an
+optimized run-plan.
+</p>
+</div>
+<div id="outline-container-orgf3d6b8b" class="outline-4">
+<h4 id="orgf3d6b8b"><span class="section-number-4">5.3.1.</span> Setup</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+Since our method of plan generation is relatively cheap,
+we want to build our plans outside of PBS.  Run plans
+can then be propagated to worker nodes for them to
+map a job array index to their relevant piece of the
+run plan.
+</p>
+
+<p>
+From either a clojure repl, or an aforementioned CLI
+invocation, we can leverage the simplistic <code>prep-batches</code>
+function in conjuction with simple plan definitions in the
+<code>default-plans</code> var.
+</p>
+
+<p>
+If we nothing to modify the script, any invocation of
+the 0-arity <code>prep-batches</code> will leverage <code>default-plans</code> to
+do its work:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #4f97d7;">(</span>load-file <span style="color: #2d9574;">"batch_test.clj"</span><span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">load and eval arbitrary source file.</span>
+<span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">in-ns</span> 'batch-test<span style="color: #4f97d7;">)</span> <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">switch the repl namespace to batch-test</span>
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">These values are already defined.  We could change them</span>
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">by redefining them in our script though.</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">(def default-node-count 10)</span>
+<span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">(def plan-path "plan.edn")</span>
+
+#_
+<span style="color: #4f97d7; background-color: #292e34;">(</span><span style="color: #2aa1ae; background-color: #292e34;">def default-plans</span>
+<span style="color: #2aa1ae; background-color: #292e34;">  </span><span style="color: #bc6ec5; background-color: #292e34;">{</span><span style="color: #2aa1ae; background-color: #292e34;">"AP" </span><span style="color: #2d9574; background-color: #292e34;">{</span><span style="color: #2aa1ae; background-color: #292e34;">:path path-AP :input-map input-map-AP :plan-path "planAP.edn"</span><span style="color: #2d9574; background-color: #292e34;">}</span>
+<span style="color: #2aa1ae; background-color: #292e34;">   "BP" </span><span style="color: #2d9574; background-color: #292e34;">{</span><span style="color: #2aa1ae; background-color: #292e34;">:path path-BP :input-map input-map-BP :plan-path "planBP.edn"</span><span style="color: #2d9574; background-color: #292e34;">}</span><span style="color: #bc6ec5; background-color: #292e34;">}</span><span style="color: #4f97d7; background-color: #292e34;">)</span>
+
+ <span style="color: #2aa1ae; background-color: #292e34;">;;</span><span style="color: #2aa1ae; background-color: #292e34;">emit an optimized run-plan.</span>
+<span style="color: #4f97d7;">(</span>prep-batches<span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<p>
+In the preceding example, we would produce plans at ./planAP.edn and ./planBP.edn
+which can then be referenced in our subsequent array job scripting on PBS.
+</p>
+
+<p>
+We assume these run-plans already exist (as well as <code>batch_test.clj</code> or a
+comparable script) going forward.
+</p>
+
+<p>
+<code>prep-batches</code> leverages a simple simulating annealing algorithm to try to
+efficiently pack the estimated volume of work into node-count bins. Since
+replications are (by default) dependent on the volume of a particular design
+point, leveraging packing instead of a naive round-robin or randomized solution
+subsantially improves our makespan.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orga2a1d97" class="outline-3">
+<h3 id="orga2a1d97"><span class="section-number-3">5.4.</span> Per-Node Execution</h3>
+<div class="outline-text-3" id="text-5-4">
+<p>
+Executing a job on a node loosely boils down to:
+</p>
+<ul class="org-ul">
+<li>Get a reference to a run-plan</li>
+<li>Get a reference to an input map</li>
+<li>Read the run-plan</li>
+<li>Look up the corresponding job array index from the environment variable for this
+node (supplied by PBS)</li>
+<li>invoke a batch-run provided by <code>taa.core/run-from-plan</code> with the run-plan,
+index, and input-map</li>
+</ul>
+
+<p>
+The script <code>batch_script.clj</code> encapsulates these facilities.
+It provides a simplistic entry point for "doing a piece of work" in a call to <code>run-me</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #4f97d7;">(</span><span style="color: #4f97d7; font-weight: bold;">defn</span> <span style="color: #bc6ec5; font-weight: bold;">run-me</span> <span style="color: #bc6ec5;">[]</span>
+  <span style="color: #bc6ec5;">(</span><span style="color: #ce537a; font-weight: bold;">taa.core</span>/run-from-plan <span style="color: #2d9574;">"planAP.edn"</span> job-index <span style="color: #ce537a; font-weight: bold;">batch</span>/input-map-AP<span style="color: #bc6ec5;">)</span><span style="color: #4f97d7;">)</span>
+</pre>
+</div>
+
+<p>
+where <code>job-index</code> is bound to the environment variable <code>PBS_ARRAY_INDEX</code>, and
+we have <code>batch_test.clj</code> loaded and in scope to provide matching input maps.
+</p>
+
+<p>
+Upon execution on a node, we expect to see 1 or more "results" files in the form of
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">batch_0_results.txt
+batch_1_results.txt
+...
+batch_k_results.txt
+</pre>
+</div>
+
+<p>
+These are intended to be concatenated by an aggregating process.  We can accomodate
+that in the <code>batch_script.clj</code> <code>run-me</code> function trivially, e.g. if we want to copy
+files to an off-node directory, or concat the files and then offload,etc.
+</p>
+</div>
+</div>
+<div id="outline-container-org8731e88" class="outline-3">
+<h3 id="org8731e88"><span class="section-number-3">5.5.</span> Job Submission</h3>
+<div class="outline-text-3" id="text-5-5">
+<p>
+The last piece of our setup is interacting with the PBS system to get a job array
+submitted that can use our infrastucture.
+</p>
+
+<p>
+Given the following files in our home directory (or another directory):
+</p>
+<ul class="org-ul">
+<li><code>m4-2.25.jar</code></li>
+<li><code>batch_test.clj</code></li>
+<li><code>batch_script.clj</code></li>
+<li><code>m4book_AP.xlsx</code></li>
+<li><code>planAP.edn</code></li>
+</ul>
+
+<p>
+we can leverage a PBS script to tie it all together:
+</p>
+
+<ul class="org-ul">
+<li>batch.pbs</li>
+</ul>
+
+<p>
+wherein we can provide a custom CLI invocation
+to setup our M4 node to process a piece of the
+job array:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">!/bin/</span><span style="color: #4f97d7; font-weight: bold;">bash</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l select=1:ncpus=48:mpiprocs=48</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -l walltime=00:20:00</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -A Project_ID</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -q debug</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -N Job_Array_Test</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -J 0-12:3</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -j oe</span>
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">PBS -V</span>
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">comments elided</span>
+
+java -XX:+UseParallelGC -Xmx250g -jar m4-2.24.jar clojure.main batch_script.clj
+</pre>
+</div>
+
+<p>
+We can customize the jvm args as necessary relative to node resources (e.g., RAM).
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 21 January 2026</p>
+<p class="author">Author: M4 Dev</p>
+<p class="date">Created: 2026-01-21 Wed 10:16</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

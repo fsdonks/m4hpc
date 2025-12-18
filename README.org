@@ -1,8 +1,198 @@
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+# #+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+# #+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+# # #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+# #+HTML_HEAD: <script type="text/javascript" src="https://unpkg.com/sticky-table-headers"></script>
+
+# #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+
+#+HTML_HEAD_EXTRA: <style> pre.src { background-color: #292e34; color: white; }</style>
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+# #+OPTIONS: toc:nil
+# This is a template for pushing out org files that are compatible with both
+# HTML and latex export. Specifically, these files Support code highlighting -
+# for clojure code - and typeset the code to look different from the main
+# sections. The design is meant for providing a quick template to inject clojure
+# source into org docs, and provide an interactive, REPL-friendly presentation.
+#+TITLE: M4HPC
+#+AUTHOR: M4 Dev
+#+DATE: 21 January 2026
+#+VERSION: 1.2
+
 * High Performance Computing APIs for M4
 This is a working implementation of running M4 on 'nix systems with the Portable
 Batch System installed.
 
+* Current Release
+[[http://marathon-site.s3-website-us-gov-west-1.amazonaws.com/releases/m4-2.25.jar][
+m4-2.25.jar]]
+
+* M4 Entry Points
+** GUI
+For the M4 uberjar, the main entrypoint actually delegates to a
+lightweight launcher to simplify the end-user experience, and act more like an
+"app" they can just 2x click to use in a typical environmet (e.g., Windows or XWindows).
+
+To this end, we typically want to leverage (for commodity hardware) 2-4gb of
+heap, and we want to ensure we're using the parallel GC instead of the later
+(Java 9+) default G1GC due to measured throughput benefits.
+
+So one way to get a running instance in a Windows or XWindows environment is to just
+2x click the jar file.
+
+** CLI
+If invoked via a java command from the CLI, the entry point will scrape any CLI-supplied JVM args and apply
+them to the subprocess (with some logging to indicate what actually launched).
+This allows callers to supply custom configuration for the production jvm process.
+
+If no args are supplied (e.g., akin to a user just 2x clicks the jar file), then we
+default to -Xmx4g -XX:+UseParallelGC for the heap and GC args respectively.
+
+** Predefined CLI Args
+*** <none>
+A 0-arg invocation ala
+
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar
+#+END_SRC
+
+Will launch the marathon.main/-main entrypoint, and ultimately try to intialize
+the GUI environment. This is more of the "app" mode intended for interactive use
+and analysis, and is undesirable for headless work.
+
+*** peer
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar peer
+#+END_SRC
+
+Will initialize an M4 peer instance that will connect to other peers using the Hazelcast
+https://hazelcast.com/ distributed computing framework.  This particular use-case
+is discussed in depth under [[id:distributedID][Distributed Clojure REPL Using Hazelcast]] .
+
+The peer will look for hazelcast configurations (specified currently as clojure .edn
+data structure files) in order of precedence:
+
+- ./hazelcast.edn
+- ~/.hazelcast/hazelcast.edn
+- HAZELCAST environment var (limited to specific AWS EC2 use cases).
+
+After initial configuration, the process will dump into a clojure repl in
+the m4peer.core namespace with marathon-related infrastucture preloaded and
+available for use in distributed workflows (both pre-built and emergent/user-defined
+on the distributed REPL).
+
+This enables common workloads (like firing up multiple headless peers over SSH)
+with preconfigured distributed mapping of workloads, distributed evaluation of clojure
+expressions from the REPL, distributed compilation/recompilation, etc.
+
+For more information on the Clojure wrapper used and the simplified hazelcast.edn
+setup, see https://github.com/joinr/hazeldemo.
+
+The utility of running peers in this prescribed way is that "normal" users performing TAA analyses don't
+have to know about the peers.  To them, all invocations look the same (even the cluster discovery process
+and work distribution is transparent).  They only have to opt-in to executing on a cluster by modifying
+the basic TAA input map to include the specific key:
+
+#+BEGIN_SRC clojure
+  {... elided
+   :run-site :cluster}
+#+END_SRC
+
+The TAA pipeline will pick up on this key and (if necessary) establish a local
+peer on the user's machine, connect to the extant cluster using whatever the
+hazelcast configuration defines, and then farm out runs from the pipeline using
+a work stealing queue with peers picking up the load and Hazelcast handling load
+balancing.
+
+Callers can also leverage arbitrary distributed computation in their scripts,
+e.g. to supplement analyses or define emergent workflows that go beyond the
+extant TAA pipeline. Peers are still useful here, since they will be listening
+for work/messages with the same dependencies the user has, thus enabling general
+purpose distributed computing from the REPL.
+
+*** repl
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar repl
+#+END_SRC
+
+is equivalent to:
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar clojure.main/repl
+#+END_SRC
+
+It serves as a means to establish a vanilla clojure REPL with the M4 jar file (and all associated
+libraries) on the classpath, but without anything loaded.  This can be used as an arbitrary
+scripting environment with faster load times than pulling in all the M4 infrastructure.  On austere
+air-gapped systems, we get a clojure development/scripting environment with many useful libraries
+pre-packaged.
+
+See https://clojure.org/reference/repl_and_main for relevant optional arguments.
+*** main
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar main
+#+END_SRC
+is equivalent to:
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar clojure.main
+#+END_SRC
+
+with the exception that the launcher will inject default args on the caller's
+behalf.
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar  main -e "(println \"hello world\")"
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"-e\" \"(println \\\"hello world\\\")\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "-e" "(println \"hello world\")"], :args ("main" "-e" "(println \"hello world\")")}
+hello world
+#+END_SRC
+
+Given a simple Clojure script, blah.clj:
+#+BEGIN_SRC clojure
+(println "Hello world!")
+#+END_SRC
+
+We can simply load it through main:
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar  main blah.clj
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"blah.clj\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "blah.clj"], :args ("main" "blah.clj")}
+Hello world!
+#+END_SRC
+
+Through this we have a general means for invoking arbitrary clojure programs:
+
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar main domanyruns.clj
+#+END_SRC
+
+See https://clojure.org/reference/repl_and_main for relevant optional arguments.
+
+*** clojure.main (bypass the launcher)
+We can have direct control over a single jvm process if we launch with
+clojure.main.  This bypasses the lancher entirely and possibly saves some time/resources.
+Since we're bypassing the launcher, all jvm settings are default (e.g. Xmx and GC settings),
+which puts the burden on the caller to configure their invocation correctly.
+#+BEGIN_SRC shell
+java -jar m4-4.2.24.jar  clojure.main -e "(println \"hello world\")"
+<caller specified clojure.main from cli, bypassing launcher>
+hello world
+#+END_SRC
+
+Similarly, we can load clojure programs as with main:
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar  clojure.main blah.clj
+<caller specified clojure.main from cli, bypassing launcher>
+Hello world!
+#+END_SRC
+
 * Distributed Clojure REPL Using Hazelcast
+:PROPERTIES:
+:ID: distributedID
+:END:
+
+Scripts referenced below may be found in the /peer folder, and input data
+(primarily a MARATHON worbook) in the /data folder.
+
 ** Assumptions
 - The sole system dependency is a JVM >= 1.8
 
@@ -41,7 +231,7 @@ Batch System installed.
 - User invokes this PBS script (or a modified version) to
   get an interactive session, either from the CLI or
   from an optional script like runit.sh:
-  #+BEGIN_SRC bash
+  #+BEGIN_SRC shell
   qsub -i peers.pbs
   #+END_SRC
 
@@ -49,7 +239,7 @@ Batch System installed.
   to what we deem "the master node".
 - User then invokes a supplemental script to initiate
   the peers.
-  #+BEGIN_SRC bash
+  #+BEGIN_SRC shell
   ./sh launchit.sh
   #+END_SRC
   - Note: this differs a bit when compared to the PET guidance
@@ -84,7 +274,7 @@ expect to see a text file with the names of 5 nodes, one per line).
 Then we'll qsub will interactively ssh us into the master node so we can
 go work.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -107,7 +297,7 @@ go work.
 Alternately (ideally) this would do the same thing with no manual
 intervention, but I lack the skills to get it working at the moment.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -130,7 +320,7 @@ This is what PET suggested, but I couldn't get it to work on my end. Instead, we
 just ssh into a node and kick off the process manually.
 
 We should be able to do this though, I just ran out of time getting it to work.
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -166,119 +356,203 @@ can have -Xmx250g or any other JVM args.
 If we want to handle the master node we're interacting from differently, then
 this is where we can hook in later. Also adapted from PET guide.
 
-* M4 Entry Points
-** GUI
-For the M4 uberjar, the main entrypoint actually delegates to a
-lightweight launcher to simplify the end-user experience, and act more like an
-"app" they can just 2x click to use in a typical environmet (e.g., Windows or XWindows).
+** Demo
 
-To this end, we typically want to leverage (for commodity hardware) 2-4gb of
-heap, and we want to ensure we're using the parallel GC instead of the later
-(Java 9+) default G1GC due to measured throughput benefits.
+The folder /peer/usagedemo contains the sole input and script
+necessary for doing distributed runs using the generic peer
+infrastructure from above.
 
-So one way to get a running instance in a Windows or XWindows environment is to just
-2x click the jar file.
+* Distributed M4 Runs Using Run Plans and PBS JobArrays
+While the interactive mode is extremely flexible and useful for runs of
+limited scope, if we need to truly scale out, and the workload might
+persist for days or weeks, then we have to explore offline methods
+of job submission.
 
-** CLI
-If invoked via a java command from the CLI, the entry point will scrape any CLI-supplied JVM args and apply
-them to the subprocess (with some logging to indicate what actually launched).
-This allows callers to supply custom configuration for the production jvm process.
+The PBS system provides a simple extension for bulk workloads that
+can be expressed via a simple incrementing index that maps to the work.
+If we can express our experimental design as a deterministic run plan,
+and we have a means of loading pieces of work based on an integer index,
+then we can leverage the job array system to submit scalable workloads
+for non-interactive work.
 
-If no args are supplied (e.g., akin to a user just 2x clicks the jar file), then we
-default to -Xmx4g -XX:+UseParallelGC for the heap and GC args respectively.
+Any scripts referenced below will be located in the /jobarray folder,
+with input data in the /data folder.
 
-** Predefined CLI Args
-*** <none>
-A 0-arg invocation ala
+A current MARATHON jar (as linked at the top of this file) must also
+be available to every potential node.
 
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar
-#+END_SRC
+** Creating Run Plans
+The normal mechanism for our bulk (e.g., TAA) processing follows
+on online, streaming model where we have a work queue with distributed
+workers.  In this scheme, we don't really care about the total extent
+of the work - we just keep pushing work onto the queue until we're done,
+while workers take work and submit results.  In this paradigm, we
+don't intend to follow an optimal (globally or locally) distribution
+of work amongst peers; instead we let the system load balance using
+hueristics and work stealing.  As such, the actual scheduling of work
+to nodes is intentionally abstracted.  To have a determinstic mapping of
+work-items to nodes, we need to change this and develop a plan for how
+our runs are scheduled.
 
-Will launch the marathon.main/-main entrypoint, and ultimately try to intialize
-the GUI environment. This is more of the "app" mode intended for interactive use
-and analysis, and is undesirable for headless work.
+** Emitting Run Plans
+We can leverage much of the existing TAA pipeline to generate a
+persistent plan.  From there, we can try to optimize our plan such
+that the total makespan of the work is minimized, which naturally leads
+to an even distribution of work across a set of nodes.
 
-*** peer
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar peer
-#+END_SRC
+The inputs we care about are:
+- a pre-supplied MARATHON workbook to provide a project we can manage in memory
+- a companion TAA input-map that supplies transforms and other parameters that
+  inform how a project is decomposed into design points and replications to
+  ultimately constitute a batch of work (or simulation runs)
+- how many nodes we expect to distribute the runs over
+- a hueristic that helps us estimate the amount of effort or cost
+  required for a particular design point.
+  - We will use a simple estimate of the total supply of entities,
+    since that strongly correlates with events in the simulation.
 
-Will initialize an M4 peer instance that will connect to other peers using the Hazelcast
-https://hazelcast.com/ distributed computing framework.
+*** workbook
+This is assumed to be pre-supplied to any nodes that need to get at it.
+Specifically, we assume it is available relative to some known path.
 
-The peer will look for hazelcast configurations (specified currently as clojure .edn
-data structure files) in order of precedence:
+We have 2 sample workbooks in /data
+- ~m4_book_AP.xlsx~
+- ~m4_book_BP.xlsx~
 
-- ./hazelcast.edn
-- ~/.hazelcast/hazelcast.edn
-- HAZELCAST environment var (limited to specific AWS EC2 use cases).
+*** input-map
+This is a clojure map either serialized in .edn format (e.g.
+a readable clojure data structure that can be deserialized by
+the clojure reader natively), or defined and used in-memory
+within a clojure script.  Our examples will follow the in-memory
+model, and we will have input maps for each workbook.
 
-After initial configuration, the process will dump into a clojure repl in
-the m4peer.core namespace with marathon-related infrastucture preloaded and
-available for use in distributed workflows (both pre-built and emergent/user-defined
-on the distributed REPL).
+*** node-count
+We intentionally keep this variable to allow our plan to
+adapt to resourcing.
 
-This enables common workloads (like firing up multiple headless peers over SSH)
-with preconfigured distributed mapping of workloads, distributed evaluation,
-distributed compilation/recompilation, etc.
+** Planning vs. Execution
+The preferred approach is to have a reusable script that
+can be used to both setup / emit a persistent run-plan,
+in addition to performing incremental runs relative to
+a job array index.
 
-For more information on the Clojure wrapper used and the simplified hazelcast.edn
-setup, see https://github.com/joinr/hazeldemo.
+The ~batch_test.clj~ script provides an example and a minimal
+API to build our PBS job on.  It supplies the relevant input
+maps and workbook paths, as well as a function to emit an
+optimized run-plan.
 
-The utility of running peers in this prescribed way is that "normal" users performing TAA analyses don't
-have to know about the peers.  To them, all invocations look the same (even the cluster discovery process
-and work distribution is transparent.  They only have to opt-in to executing on a cluster by modifying
-the basic TAA input map to include the specific key:
+*** Setup
+Since our method of plan generation is relatively cheap,
+we want to build our plans outside of PBS.  Run plans
+can then be propagated to worker nodes for them to
+map a job array index to their relevant piece of the
+run plan.
+
+From either a clojure repl, or an aforementioned CLI
+invocation, we can leverage the simplistic ~prep-batches~
+function in conjuction with simple plan definitions in the
+~default-plans~ var.
+
+If we nothing to modify the script, any invocation of
+the 0-arity ~prep-batches~ will leverage ~default-plans~ to
+do its work:
 
 #+BEGIN_SRC clojure
-  {... elided
-   :run-site :cluster}
+  (load-file "batch_test.clj") ;;load and eval arbitrary source file.
+  (in-ns 'batch-test) ;;switch the repl namespace to batch-test
+  ;;These values are already defined.  We could change them
+  ;;by redefining them in our script though.
+
+  ;;(def default-node-count 10)
+  ;;(def plan-path "plan.edn")
+
+  #_
+  (def default-plans
+    {"AP" {:path path-AP :input-map input-map-AP :plan-path "planAP.edn"}
+     "BP" {:path path-BP :input-map input-map-BP :plan-path "planBP.edn"}})
+
+   ;;emit an optimized run-plan.
+  (prep-batches)
 #+END_SRC
 
-The TAA pipeline will pick up on this key and (if necessary) establish a local
-peer on the user's machine, connect to the extant cluster using whatever the
-hazelcast configuration defines, and then farm out runs from the pipeline using
-a work stealing queue with peers picking up the load and Hazelcast handling load
-balancing.
+In the preceding example, we would produce plans at ./planAP.edn and ./planBP.edn
+which can then be referenced in our subsequent array job scripting on PBS.
 
-Callers can also leverage arbitrary distributed computation in their scripts,
-e.g. to supplement analyses or define emergent workflows that go beyond the
-extant TAA pipeline. Peers are still useful here, since they will be listening
-for work/messages with the same dependencies the user has, thus enabling general
-purpose distributed computing from the REPL.
+We assume these run-plans already exist (as well as ~batch_test.clj~ or a
+comparable script) going forward.
 
-*** repl
+~prep-batches~ leverages a simple simulating annealing algorithm to try to
+efficiently pack the estimated volume of work into node-count bins. Since
+replications are (by default) dependent on the volume of a particular design
+point, leveraging packing instead of a naive round-robin or randomized solution
+subsantially improves our makespan.
+
+** Per-Node Execution
+Executing a job on a node loosely boils down to:
+- Get a reference to a run-plan
+- Get a reference to an input map
+- Read the run-plan
+- Look up the corresponding job array index from the environment variable for this
+  node (supplied by PBS)
+- invoke a batch-run provided by ~taa.core/run-from-plan~ with the run-plan,
+  index, and input-map
+
+The script ~batch_script.clj~ encapsulates these facilities.
+It provides a simplistic entry point for "doing a piece of work" in a call to ~run-me~:
+
+#+BEGIN_SRC clojure
+  (defn run-me []
+    (taa.core/run-from-plan "planAP.edn" job-index batch/input-map-AP))
+#+END_SRC
+
+where ~job-index~ is bound to the environment variable ~PBS_ARRAY_INDEX~, and
+we have ~batch_test.clj~ loaded and in scope to provide matching input maps.
+
+Upon execution on a node, we expect to see 1 or more "results" files in the form of
+#+BEGIN_SRC shell
+  batch_0_results.txt
+  batch_1_results.txt
+  ...
+  batch_k_results.txt
+#+END_SRC
+
+These are intended to be concatenated by an aggregating process.  We can accomodate
+that in the ~batch_script.clj~ ~run-me~ function trivially, e.g. if we want to copy
+files to an off-node directory, or concat the files and then offload,etc.
+
+** Job Submission
+The last piece of our setup is interacting with the PBS system to get a job array
+submitted that can use our infrastucture.
+
+Given the following files in our home directory (or another directory):
+- ~m4-2.25.jar~
+- ~batch_test.clj~
+- ~batch_script.clj~
+- ~m4book_AP.xlsx~
+- ~planAP.edn~
+
+we can leverage a PBS script to tie it all together:
+
+- batch.pbs
+
+wherein we can provide a custom CLI invocation
+to setup our M4 node to process a piece of the
+job array:
+
 #+BEGIN_SRC bash
-java -jar m4-2.23.jar repl
+  #!/bin/bash
+  #PBS -l select=1:ncpus=48:mpiprocs=48
+  #PBS -l walltime=00:20:00
+  #PBS -A Project_ID
+  #PBS -q debug
+  #PBS -N Job_Array_Test
+  #PBS -J 0-12:3
+  #PBS -j oe
+  #PBS -V
+
+  #comments elided
+
+  java -XX:+UseParallelGC -Xmx250g -jar m4-2.24.jar clojure.main batch_script.clj
 #+END_SRC
 
-is equivalent to:
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar clojure.main/repl
-#+END_SRC
-
-It serves as a means to establish a vanilla clojure REPL with the M4 jar file (and all associated
-libraries) on the classpath, but without anything loaded.  This can be used as an arbitrary
-scripting environment with faster load times than pulling in all the M4 infrastructure.  On austere
-air-gapped systems, we get a clojure development/scripting environment with many useful libraries
-pre-packaged.
-
-See https://clojure.org/reference/repl_and_main for relevant optional arguments.
-*** main
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar main
-#+END_SRC
-is equivalent to:
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar clojure.main/repl
-#+END_SRC
-
-Through this we have a general means for invoking arbitrary clojure programs:
-#+BEGIN_SRC bash
-java -jar m4-2.23.jar main domanyruns.clj
-#+END_SRC
-
-See https://clojure.org/reference/repl_and_main for relevant optional arguments.
-
-** Lower Level
+We can customize the jvm args as necessary relative to node resources (e.g., RAM).
