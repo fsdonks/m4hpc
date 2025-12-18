@@ -1,0 +1,4 @@
+{:id "dev"
+ :join :tcp
+ :members {:file/path "./registry"}
+ :register-on-join true}

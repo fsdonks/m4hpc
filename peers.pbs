@@ -1,0 +1,126 @@
+#!/bin/bash
+#PBS -A OARMY5244AH96
+#PBS -q standard
+#PBS -l select=5
+#PBS -l walltime=1:00:00
+
+#This is a working implementation of running
+#M4 on 'nix systems with the Portable Batch System
+#installed.  We make a few minimal assumptions:
+
+#- The sole system dependency is a JVM >= 1.8
+
+#- The working directory is readable/writeable
+#  from the compute nodes in a particular job
+#  (or we can target such a shared location)
+
+#- The session in this script is meant to be
+#  launched as an interactive job via SSH,
+#  where we (the user) attach so an arbitrary
+#  compute node (dubbed the master node),
+#  and we initiate ad-hoc clustering with
+#  a supplemental script (launch-it) to get
+#  an interactive clojure REPL with distributed
+#  compute capability amongst all the peers.
+
+#- We have configured inputs for study analysis
+#  (e.g., a TAA useage.clj file that references
+#  input data on the shared file system)
+
+#- We have write access to desired output directories
+#  as necessary (e.g., paths specified in the TAA usage
+#  script).
+
+#- We have a ~/hazelcast.edn file that all peers can
+#  read to share a common hazelcast configuration and
+#  discovery strategy.
+
+#- All the peers have write acess to the path indicated
+#  in the ~/hazelcast.edn file so that they can
+#  register themselves for auto-discovery and cluster
+#  joining.
+
+#The anticipated work flow is then:
+
+#- User connects to an HPC system with the above setup
+#- User invokes this PBS script (or a modified version) to
+#  get an interactive session.
+#  qsub -i peers.pbs
+#- The job is queued and the user is left with an ssh connection
+#  to what we deemd "the master node".
+#- User then invokes a supplemental script to initiate
+#  the peers.
+#  - Note: this differs a bit when compared to the PET guidance
+#    where everything is coordinated from the PBS file over ssh.
+
+#Let's allocate 5 nodes (we can change this with
+#CLI args, or just modify the select PBS arg above).
+
+#We use the default companion ~/hazelcast.edn which will provide the default
+#connection configuration for any peers launching from this filesystem. Since
+#the filesystem gets copied to each peer during job submission time (they all
+#have the user's home directory mapped, at least on Betty), they will all pick
+#up ~/hazelcast.edn which tells them to use tcp/ip discovery and register their
+#IP's in ~/registry for the ad-hoc cluster and message services.
+
+#We'll leverage the example from PET guides to build a node_list
+#that our head node can use to launch peers.
+#node_list.txt will be populated with the resolvable names of
+#each node in our PBS job (e.g., for a select=5 job, we expect
+#to see a text file with the names of 5 nodes, one per line).
+
+cat $PBS_NODEFILE | sort -u > node_list.txt
+NNODES=$(cat node_list.txt | wc -l)
+
+#We provide a couple of companion scripts that serve as
+#hook sites for configuring peers and the master node.
+
+#For now, they are identical, but we expect the scripts
+#~/runpeer.sh and ~/runmaster.sh to be present for now.
+#They contain our java CLI invocations for setting up
+#the JVM with the appropriate args (typically -Xmx###g)
+#depending on the compute node's capabilities.
+#E.g., if we know our nodes can accomodate a 250gb heap,
+#then we can have -Xmx250g or any other JVM args.
+
+#Note: for the M4 uberjar, the main entrypoint actually
+#delegates to a lightweight launcher to simplify the
+#end-user experience, and act more like an "app" they can
+#just 2x click to use.  To this end, we typically want to
+#leverage (for commodity hardware) 2-4gb of heap, and we
+#want to ensure we're using the parallel GC instead of the
+#later default G1GC due to measured throughput benefits.
+#To this end, the entry point will scrape any CLI-supplied
+#JVM args and apply them to the subprocess (with some logging
+#to indicate what actually launched).  If no args are
+#supplied (e.g. a user just 2x clicks the jar file), then
+#we default to -Xmx4g -XX:+UseParallelGC for the heap and
+#GC args respectively.
+
+#If we want to handle the master node we're interacting
+#from differently, then this is where we can hook in later.
+#Also adapted from PET guide.
+
+ridx=1
+ROOTNODE=$(sed "${ridx}q;d" node_list.txt)
+
+#This is what PET suggested, but I couldn't get
+#it to work on my end.  Instead, we just ssh into
+#a node and kick off the process manually.
+#We should be able to do this though, I might just be missing
+#something
+#for ((i = 2; i<=$NNODES;i++))
+#    do
+#      MYNODE=$(sed "${i}q;d" node_list.txt)
+#      ssh $MYNODE ./runpeer.sh &
+#ssh $ROOTNODE ./runmaster.sh
+
+#ssh into our master
+echo "ssh into master node, use launchit.sh to connect to cluster"
+
+ssh $ROOTNODE
+
+#alternately (ideally) this would do the same thing with no manual
+#intervention, also doesn't work at the moment.
+
+#ssh $ROOTNODE "sh launchit.sh"

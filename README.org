@@ -1,0 +1,284 @@
+* High Performance Computing APIs for M4
+This is a working implementation of running M4 on 'nix systems with the Portable
+Batch System installed.
+
+* Distributed Clojure REPL Using Hazelcast
+** Assumptions
+- The sole system dependency is a JVM >= 1.8
+
+- The working directory is readable/writeable from the compute nodes in a
+  particular job (or we can target such a shared location)
+
+- The session in this script is meant to be launched as an interactive job via
+  SSH, where we (the user) attach so an arbitrary compute node (dubbed the
+  master node), and we initiate ad-hoc clustering with a supplemental script
+  (launch-it) to get an interactive clojure REPL with distributed compute
+  capability amongst all the peers.
+
+- We have configured inputs for study analysis (e.g., a TAA useage.clj file that
+  references input data on the shared file system)
+
+- We have write access to desired output directories as necessary (e.g., paths
+  specified in the TAA usage script).
+
+- We have a ~/hazelcast.edn file that all peers can read to share a common
+  hazelcast configuration and discovery strategy.
+
+- All the peers have write acess to the path indicated in the ~/hazelcast.edn
+  file so that they can register themselves for auto-discovery and cluster
+  joining.
+
+** Workflow
+
+- User connects to an HPC system with the above setup.
+  - hazelcast.edn
+  - peers.pbs
+  - master.sh
+  - peer.sh
+  - launchit.sh
+  - (optional) runit.sh
+
+- User invokes this PBS script (or a modified version) to
+  get an interactive session, either from the CLI or
+  from an optional script like runit.sh:
+  #+BEGIN_SRC bash
+  qsub -i peers.pbs
+  #+END_SRC
+
+- The job is queued and the user is left with an ssh connection
+  to what we deem "the master node".
+- User then invokes a supplemental script to initiate
+  the peers.
+  #+BEGIN_SRC bash
+  ./sh launchit.sh
+  #+END_SRC
+  - Note: this differs a bit when compared to the PET guidance
+    where everything is coordinated from the PBS file over ssh.
+    We will revisit that since it's a mildly cleaner design, if
+    it can be made to work (definitely user error at this point).
+
+** hazelcast.edn
+We use the default companion ~/hazelcast.edn which will provide the default
+connection configuration for any peers launching from this filesystem. Since
+the filesystem gets mounted to each peer during job submission time (they all
+have the user's home directory mapped, at least on Betty), they will all pick
+up ~/hazelcast.edn which tells them to use tcp/ip discovery and register their
+IP's in ~/registry for the ad-hoc cluster and message services.
+
+#+BEGIN_SRC clojure
+  {:id "dev"
+   :join :tcp
+   :members {:file/path "./registry"}
+   :register-on-join true}
+#+END_SRC
+
+** peers.pbs
+The included sample allocates 5 nodes (we can change this with CLI args, or just
+modify the select PBS arg for select).
+
+We'll leverage the example from PET guides to build a node_list that our head
+node can use to launch peers. node_list.txt will be populated with the
+resolvable names of each node in our PBS job (e.g., for a select=5 job, we
+expect to see a text file with the names of 5 nodes, one per line).
+
+Then we'll qsub will interactively ssh us into the master node so we can
+go work.
+
+#+BEGIN_SRC bash
+  #!/bin/bash
+  #PBS -A OARMY5244AH96
+  #PBS -q standard
+  #PBS -l select=5
+  #PBS -l walltime=1:00:00
+
+  cat $PBS_NODEFILE | sort -u > node_list.txt
+  NNODES=$(cat node_list.txt | wc -l)
+
+  ridx=1
+  ROOTNODE=$(sed "${ridx}q;d" node_list.txt)
+
+  echo "ssh into master node, use launchit.sh to connect to cluster"
+  ssh $ROOTNODE
+#+END_SRC
+
+
+*** Alternative PBS Method (Pending)
+
+Alternately (ideally) this would do the same thing with no manual
+intervention, but I lack the skills to get it working at the moment.
+
+#+BEGIN_SRC bash
+  #!/bin/bash
+  #PBS -A OARMY5244AH96
+  #PBS -q standard
+  #PBS -l select=5
+  #PBS -l walltime=1:00:00
+
+  cat $PBS_NODEFILE | sort -u > node_list.txt
+  NNODES=$(cat node_list.txt | wc -l)
+
+  ridx=1
+  ROOTNODE=$(sed "${ridx}q;d" node_list.txt)
+
+  echo "ssh into master node, use launchit.sh to connect to cluster"
+  ssh $ROOTNODE "sh launchit.sh"
+#+END_SRC
+
+Or we do all the work that launchit.sh does (spawning peers) from the PBS file.
+
+This is what PET suggested, but I couldn't get it to work on my end. Instead, we
+just ssh into a node and kick off the process manually.
+
+We should be able to do this though, I just ran out of time getting it to work.
+#+BEGIN_SRC bash
+  #!/bin/bash
+  #PBS -A OARMY5244AH96
+  #PBS -q standard
+  #PBS -l select=5
+  #PBS -l walltime=1:00:00
+
+  cat $PBS_NODEFILE | sort -u > node_list.txt
+  NNODES=$(cat node_list.txt | wc -l)
+
+  ridx=1
+  ROOTNODE=$(sed "${ridx}q;d" node_list.txt)
+
+  for ((i = 2; i<=$NNODES;i++))
+    do
+      MYNODE=$(sed "${i}q;d" node_list.txt)
+      ssh $MYNODE ./runpeer.sh &
+  ssh $ROOTNODE ./runmaster.sh
+#+END_SRC
+
+** Helper Scripts for peers and master
+
+We provide a couple of companion scripts that serve as hook sites for
+configuring peers and the master node.
+
+For now, they are identical, but we expect the scripts ~/runpeer.sh and
+~/runmaster.sh to be present.
+
+They contain our java CLI invocations for setting up the JVM with the
+appropriate args (typically -Xmx###g) depending on the compute node's
+capabilities. E.g., if we know our nodes can accomodate a 250gb heap, then we
+can have -Xmx250g or any other JVM args.
+
+If we want to handle the master node we're interacting from differently, then
+this is where we can hook in later. Also adapted from PET guide.
+
+* M4 Entry Points
+** GUI
+For the M4 uberjar, the main entrypoint actually delegates to a
+lightweight launcher to simplify the end-user experience, and act more like an
+"app" they can just 2x click to use in a typical environmet (e.g., Windows or XWindows).
+
+To this end, we typically want to leverage (for commodity hardware) 2-4gb of
+heap, and we want to ensure we're using the parallel GC instead of the later
+(Java 9+) default G1GC due to measured throughput benefits.
+
+So one way to get a running instance in a Windows or XWindows environment is to just
+2x click the jar file.
+
+** CLI
+If invoked via a java command from the CLI, the entry point will scrape any CLI-supplied JVM args and apply
+them to the subprocess (with some logging to indicate what actually launched).
+This allows callers to supply custom configuration for the production jvm process.
+
+If no args are supplied (e.g., akin to a user just 2x clicks the jar file), then we
+default to -Xmx4g -XX:+UseParallelGC for the heap and GC args respectively.
+
+** Predefined CLI Args
+*** <none>
+A 0-arg invocation ala
+
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar
+#+END_SRC
+
+Will launch the marathon.main/-main entrypoint, and ultimately try to intialize
+the GUI environment. This is more of the "app" mode intended for interactive use
+and analysis, and is undesirable for headless work.
+
+*** peer
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar peer
+#+END_SRC
+
+Will initialize an M4 peer instance that will connect to other peers using the Hazelcast
+https://hazelcast.com/ distributed computing framework.
+
+The peer will look for hazelcast configurations (specified currently as clojure .edn
+data structure files) in order of precedence:
+
+- ./hazelcast.edn
+- ~/.hazelcast/hazelcast.edn
+- HAZELCAST environment var (limited to specific AWS EC2 use cases).
+
+After initial configuration, the process will dump into a clojure repl in
+the m4peer.core namespace with marathon-related infrastucture preloaded and
+available for use in distributed workflows (both pre-built and emergent/user-defined
+on the distributed REPL).
+
+This enables common workloads (like firing up multiple headless peers over SSH)
+with preconfigured distributed mapping of workloads, distributed evaluation,
+distributed compilation/recompilation, etc.
+
+For more information on the Clojure wrapper used and the simplified hazelcast.edn
+setup, see https://github.com/joinr/hazeldemo.
+
+The utility of running peers in this prescribed way is that "normal" users performing TAA analyses don't
+have to know about the peers.  To them, all invocations look the same (even the cluster discovery process
+and work distribution is transparent.  They only have to opt-in to executing on a cluster by modifying
+the basic TAA input map to include the specific key:
+
+#+BEGIN_SRC clojure
+  {... elided
+   :run-site :cluster}
+#+END_SRC
+
+The TAA pipeline will pick up on this key and (if necessary) establish a local
+peer on the user's machine, connect to the extant cluster using whatever the
+hazelcast configuration defines, and then farm out runs from the pipeline using
+a work stealing queue with peers picking up the load and Hazelcast handling load
+balancing.
+
+Callers can also leverage arbitrary distributed computation in their scripts,
+e.g. to supplement analyses or define emergent workflows that go beyond the
+extant TAA pipeline. Peers are still useful here, since they will be listening
+for work/messages with the same dependencies the user has, thus enabling general
+purpose distributed computing from the REPL.
+
+*** repl
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar repl
+#+END_SRC
+
+is equivalent to:
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar clojure.main/repl
+#+END_SRC
+
+It serves as a means to establish a vanilla clojure REPL with the M4 jar file (and all associated
+libraries) on the classpath, but without anything loaded.  This can be used as an arbitrary
+scripting environment with faster load times than pulling in all the M4 infrastructure.  On austere
+air-gapped systems, we get a clojure development/scripting environment with many useful libraries
+pre-packaged.
+
+See https://clojure.org/reference/repl_and_main for relevant optional arguments.
+*** main
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar main
+#+END_SRC
+is equivalent to:
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar clojure.main/repl
+#+END_SRC
+
+Through this we have a general means for invoking arbitrary clojure programs:
+#+BEGIN_SRC bash
+java -jar m4-2.23.jar main domanyruns.clj
+#+END_SRC
+
+See https://clojure.org/reference/repl_and_main for relevant optional arguments.
+
+** Lower Level
