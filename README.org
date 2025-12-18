@@ -1,3 +1,23 @@
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+# #+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+# #+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+# #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+# #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+# #+OPTIONS: toc:nil
+# This is a template for pushing out org files that are compatible with both
+# HTML and latex export. Specifically, these files Support code highlighting -
+# for clojure code - and typeset the code to look different from the main
+# sections. The design is meant for providing a quick template to inject clojure
+# source into org docs, and provide an interactive, REPL-friendly presentation.
+#+TITLE: M4HPC
+#+AUTHOR: T. S.
+#+DATE: 18 December 2025
+#+VERSION: 1.2
+
 * High Performance Computing APIs for M4
 This is a working implementation of running M4 on 'nix systems with the Portable
 Batch System installed.
@@ -41,7 +61,7 @@ Batch System installed.
 - User invokes this PBS script (or a modified version) to
   get an interactive session, either from the CLI or
   from an optional script like runit.sh:
-  #+BEGIN_SRC bash
+  #+BEGIN_SRC shell
   qsub -i peers.pbs
   #+END_SRC
 
@@ -49,7 +69,7 @@ Batch System installed.
   to what we deem "the master node".
 - User then invokes a supplemental script to initiate
   the peers.
-  #+BEGIN_SRC bash
+  #+BEGIN_SRC shell
   ./sh launchit.sh
   #+END_SRC
   - Note: this differs a bit when compared to the PET guidance
@@ -84,7 +104,7 @@ expect to see a text file with the names of 5 nodes, one per line).
 Then we'll qsub will interactively ssh us into the master node so we can
 go work.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -107,7 +127,7 @@ go work.
 Alternately (ideally) this would do the same thing with no manual
 intervention, but I lack the skills to get it working at the moment.
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -130,7 +150,7 @@ This is what PET suggested, but I couldn't get it to work on my end. Instead, we
 just ssh into a node and kick off the process manually.
 
 We should be able to do this though, I just ran out of time getting it to work.
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
   #!/bin/bash
   #PBS -A OARMY5244AH96
   #PBS -q standard
@@ -191,7 +211,7 @@ default to -Xmx4g -XX:+UseParallelGC for the heap and GC args respectively.
 *** <none>
 A 0-arg invocation ala
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar
 #+END_SRC
 
@@ -200,7 +220,7 @@ the GUI environment. This is more of the "app" mode intended for interactive use
 and analysis, and is undesirable for headless work.
 
 *** peer
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar peer
 #+END_SRC
 
@@ -249,12 +269,12 @@ for work/messages with the same dependencies the user has, thus enabling general
 purpose distributed computing from the REPL.
 
 *** repl
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar repl
 #+END_SRC
 
 is equivalent to:
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar clojure.main/repl
 #+END_SRC
 
@@ -266,16 +286,16 @@ pre-packaged.
 
 See https://clojure.org/reference/repl_and_main for relevant optional arguments.
 *** main
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar main
 #+END_SRC
 is equivalent to:
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar clojure.main/repl
 #+END_SRC
 
 Through this we have a general means for invoking arbitrary clojure programs:
-#+BEGIN_SRC bash
+#+BEGIN_SRC shell
 java -jar m4-2.23.jar main domanyruns.clj
 #+END_SRC
 
