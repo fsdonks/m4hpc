@@ -3,10 +3,14 @@
 
 # #+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 # #+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-# #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+# # #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+# #+HTML_HEAD: <script type="text/javascript" src="https://unpkg.com/sticky-table-headers"></script>
+
 # #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 
-# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+#+HTML_HEAD_EXTRA: <style> pre.src { background-color: #292e34; color: white; }</style>
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
 # #+OPTIONS: toc:nil
 # This is a template for pushing out org files that are compatible with both
 # HTML and latex export. Specifically, these files Support code highlighting -
@@ -298,7 +302,7 @@ with the exception that the launcher will inject default args on the caller's
 behalf.
 #+BEGIN_SRC shell
 java -jar m4-2.23.jar  main -e "(println \"hello world\")"
-{:launching-subprocess "java -XX:+UseParallelGC -jar m4top-4.2.24-SNAPSHOT-standalone.jar entry \"main\" \"-e\" \"(println \\\"hello world\\\")\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "-e" "(println \"hello world\")"], :args ("main" "-e" "(println \"hello world\")")}
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"-e\" \"(println \\\"hello world\\\")\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "-e" "(println \"hello world\")"], :args ("main" "-e" "(println \"hello world\")")}
 hello world
 #+END_SRC
 
@@ -310,7 +314,7 @@ Given a simple Clojure script, blah.clj:
 We can simply load it through main:
 #+BEGIN_SRC shell
 java -jar m4-2.23.jar  main blah.clj
-{:launching-subprocess "java -XX:+UseParallelGC -jar m4top-4.2.24-SNAPSHOT-standalone.jar entry \"main\" \"blah.clj\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "blah.clj"], :args ("main" "blah.clj")}
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4-2.23.jar entry \"main\" \"blah.clj\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "blah.clj"], :args ("main" "blah.clj")}
 Hello world!
 #+END_SRC
 
@@ -335,7 +339,7 @@ hello world
 
 Similarly, we can load clojure programs as with main:
 #+BEGIN_SRC shell
-java -jar m4top-4.2.24-SNAPSHOT-standalone.jar  clojure.main blah.clj
+java -jar m4-2.23.jar  clojure.main blah.clj
 <caller specified clojure.main from cli, bypassing launcher>
 Hello world!
 #+END_SRC
