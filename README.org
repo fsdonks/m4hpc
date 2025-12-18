@@ -291,14 +291,51 @@ java -jar m4-2.23.jar main
 #+END_SRC
 is equivalent to:
 #+BEGIN_SRC shell
-java -jar m4-2.23.jar clojure.main/repl
+java -jar m4-2.23.jar clojure.main
+#+END_SRC
+
+with the exception that the launcher will inject default args on the caller's
+behalf.
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar  main -e "(println \"hello world\")"
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4top-4.2.24-SNAPSHOT-standalone.jar entry \"main\" \"-e\" \"(println \\\"hello world\\\")\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "-e" "(println \"hello world\")"], :args ("main" "-e" "(println \"hello world\")")}
+hello world
+#+END_SRC
+
+Given a simple Clojure script, blah.clj:
+#+BEGIN_SRC clojure
+(println "Hello world!")
+#+END_SRC
+
+We can simply load it through main:
+#+BEGIN_SRC shell
+java -jar m4-2.23.jar  main blah.clj
+{:launching-subprocess "java -XX:+UseParallelGC -jar m4top-4.2.24-SNAPSHOT-standalone.jar entry \"main\" \"blah.clj\"", :jvm-args ["-XX:+UseParallelGC"], :user-args ["main" "blah.clj"], :args ("main" "blah.clj")}
+Hello world!
 #+END_SRC
 
 Through this we have a general means for invoking arbitrary clojure programs:
+
 #+BEGIN_SRC shell
 java -jar m4-2.23.jar main domanyruns.clj
 #+END_SRC
 
 See https://clojure.org/reference/repl_and_main for relevant optional arguments.
 
-** Lower Level
+*** clojure.main (bypass the launcher)
+We can have direct control over a single jvm process if we launch with
+clojure.main.  This bypasses the lancher entirely and possibly saves some time/resources.
+Since we're bypassing the launcher, all jvm settings are default (e.g. Xmx and GC settings),
+which puts the burden on the caller to configure their invocation correctly.
+#+BEGIN_SRC shell
+java -jar m4-4.2.24.jar  clojure.main -e "(println \"hello world\")"
+<caller specified clojure.main from cli, bypassing launcher>
+hello world
+#+END_SRC
+
+Similarly, we can load clojure programs as with main:
+#+BEGIN_SRC shell
+java -jar m4top-4.2.24-SNAPSHOT-standalone.jar  clojure.main blah.clj
+<caller specified clojure.main from cli, bypassing launcher>
+Hello world!
+#+END_SRC
