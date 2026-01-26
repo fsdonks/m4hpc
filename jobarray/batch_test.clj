@@ -40,7 +40,7 @@
 
 ;;This is the root path to our project.
 ;;tbd, change to resolve res.
-(def inputs-outputs-path (io/file-path "./test/resources/usage"))
+(def inputs-outputs-path (io/file-path "~/results"))
 (def src-str-branch  (io/file-path inputs-outputs-path "notional.xlsx"))
 
 (def forward-names-ac #{"Forward Stationing"})

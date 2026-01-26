@@ -53,7 +53,7 @@ JOBID=`echo ${PBS_JOBID} | cut -d'[' -f1`
 
 #supply the correct jvm args for your node's resources...
 #and the correct jar file if using a different version.
-java -XX:+UseParallelGC -Xmx250g -jar m4-2.24.jar clojure.main batch_script.clj
+java -XX:+UseParallelGC -Xmx250g -jar m4-2.25.jar clojure.main batch_script.clj
 
 #we push all the scripting complexity into the clojure side and handle our
 #output generation there.  this should produce multiple batch_{JOBID}_results.txt

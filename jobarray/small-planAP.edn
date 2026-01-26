@@ -1,1 +1,2 @@
-{:root-project "/home/tom/repos/taa/test/resources/usage/m4_book_AP.xlsx", :batches [[{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}] [{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}] [{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}]]}
+{:root-project "~/m4hpc/data/m4_book_AP.xlsx", 
+  :batches [[{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}] [{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}] [{:src "55633K100", :supply {"AC" 0, "RC" 27}, :reps 10, :volume 270}]]}
